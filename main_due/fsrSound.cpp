@@ -53,24 +53,26 @@ void fsrSound::sendData() {
 
   dataArrSend[15] = 'E'; // end parity
 
-  dataArrSend[16] = '\n';
-  Serial.write(dataArrSend, 16);
+  //dataArrSend[16] = '\n';
+  Serial.write(dataArrSend,16);
+  Serial.flush();
+  delayMicroseconds(100);
 }
 
 
 void fsrSound::dotriaconta_7(unsigned long input) {
 
   int ind = 0;
-  unsigned long Q, R;
-  unsigned long num = input;
+  int Q, R;
+  int num = (int)input;
+  for (int k = 0; k < 7; k++) {
+        dataArr7[k] = '0';
+      }
   while (1) {
     Q = num / 32;
     R = num % 32;
     if (Q == 0) {
       dataArr7[ind] = dataArrList[R];
-      for (int k = ind + 1; k < 6; k++) {
-        dataArr7[k] = '0';
-      }
       break;
     }
     dataArr7[ind] = dataArrList[R];
@@ -82,14 +84,14 @@ void fsrSound::dotriaconta_2(int input) {
 
   int Q, R, ind = 0;
   int num = (int)input;
+   for (int k = 0; k < 3; k++) {
+        dataArr2[k] = '0';
+      }
   while (1) {
     Q = num / 32;
     R = num % 32;
     if (Q == 0) {
       dataArr2[ind] = dataArrList[R];
-      for (int k = ind + 1; k < 3; k++) {
-        dataArr2[k] = '0';
-      }
       break;
     }
     dataArr2[ind] = dataArrList[R];
@@ -102,14 +104,14 @@ void fsrSound::dotriaconta_3(int freq){
   
   int Q, R, ind = 0;
   int num = (int)freq;
+  for (int k = 0; k < 3; k++) {
+        dataArr3[k] = '0';
+      }
   while (1) {
     Q = num / 32;
     R = num % 32;
     if (Q == 0) {
-      dataArr3[ind] = dataArrList[R];
-      for (int k = ind + 1; k < 2; k++) {
-        dataArr3[k] = '0';
-      }
+      dataArr3[ind] = dataArrList[R];  
       break;
     }
     dataArr3[ind] = dataArrList[R];

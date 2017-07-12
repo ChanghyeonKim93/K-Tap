@@ -8,7 +8,7 @@
 #include <QThread>
 #include <QCoreApplication>
 #include <iostream>
-extern char shared_data_recv[500];
+extern char shared_data_recv[1000];
 extern int shared_fsr;
 extern int shared_time;
 extern int shared_signalOnOff;
@@ -28,6 +28,7 @@ class mythread : public QObject
   Q_OBJECT
 
 public:
+  int discard_ind = 0;
   mythread(QMutex* mu, QObject *parent=0):QObject(parent){
     mutex = mu;
     std::cout<<"thread made"<<std::endl;
@@ -45,6 +46,7 @@ private:
   QMutex* mutex;
   std::queue<char> myQueue;
   int sequence_num=0;
+
 public slots:
   void run();
 

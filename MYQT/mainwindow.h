@@ -43,7 +43,7 @@
 #define DEVICE_ARDU1 "/dev/ttyACM1"
 
 //define baud rate
-extern char shared_data_recv[500];
+extern char shared_data_recv[1000];
 extern int shared_fsr;
 extern int shared_time;
 extern int shared_signalOnOff;

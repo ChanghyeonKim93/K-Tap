@@ -55,8 +55,6 @@ void MainWindow::switchbutton_click(){
     else if(onOff_status==1){
       onOff_status=0;
       std::cout<<"end?"<<std::endl;
-      //this->ui->lineEdit1->setText("Stop");
-      //this->ui->switchButton->setText("Exit");
       endProgram();
     }
 }
@@ -67,14 +65,11 @@ void MainWindow::on_connectButton_clicked(){
     fd = open("/dev/ttyACM0",O_RDWR|O_NOCTTY | O_NDELAY );
 
     cfsetispeed(&newtio, B460800);    // set baud rates
-    newtio.c_cflag = B460800| CS8 | CREAD | CLOCAL;
+    newtio.c_cflag = B460800 | CS8 | CREAD | CLOCAL;
     newtio.c_iflag = IGNPAR;
     newtio.c_oflag = 0;
     newtio.c_lflag = 0;
     tcsetattr(fd, TCSANOW, &newtio); // apply the settings to the port
-
-    //QString temp_port; // for commbBox
-    //temp_port = ui->portBox->currentText();
 
     notRsRead = new QSocketNotifier(fd,QSocketNotifier::Read,this);
     connect(notRsRead,SIGNAL(activated(int)),this,SLOT(setEvent()));
@@ -84,7 +79,7 @@ void MainWindow::setEvent(){
 
    // mutex->lock();
     int szRead = read(fd,&shared_data_recv,BUFF_SIZE);
-    //std::cout<<"data length : "<<szRead<<std::endl;
+    std::cout<<"data length : "<<szRead<<std::endl;
 
     if(szRead>0)  {
         shared_update_count++;
@@ -93,23 +88,13 @@ void MainWindow::setEvent(){
       }
 
       shared_data_recv[szRead] = '\0';
-      if(szRead>0){
-          ui->textEdit->setText(shared_data_recv);
-          ui->textEdit_time->setText(QString("%1").arg(shared_time, 0, 'f', 0));
-          ui->textEdit_fsr->setText(QString("%1").arg(shared_fsr, 0, 'f', 0));
-          ui->textEdit_sign->setText(QString("%1").arg(shared_signalOnOff, 0, 'f', 0));
-          ui->textEdit_seq_num->setText(QString("%1").arg(shared_seq_num,0,'f',0));
-        }
-
-  //  mutex->unlock();
-
-   // dataTemp.assign(data_recv);
-
-    //ui->textEdit->insertPlainText(buf_temp);
-    //ui->textEdit->moveCursor(QTextCursor::End);
-
-
+      ui->textEdit->setText(shared_data_recv);
+      ui->textEdit_time->setText(QString("%1").arg(shared_time, 0, 'f', 0));
+      ui->textEdit_fsr->setText(QString("%1").arg(shared_fsr, 0, 'f', 0));
+      ui->textEdit_sign->setText(QString("%1").arg(shared_signalOnOff, 0, 'f', 0));
+      ui->textEdit_seq_num->setText(QString("%1").arg(shared_seq_num,0,'f',0));
 }
+
 
 void MainWindow::saveData(){
   std::cout<<"save data..."<<std::endl;
@@ -150,25 +135,19 @@ void MainWindow::setRealtimePlot(){
   if (key-lastPointKey > 0.002) // at most add point every 2 ms
   {
     // add data to lines:
-      // addData(xData,yData)
     ui->customPlot->graph(0)->addData(key, shared_signalOnOff);
-    //ui->customPlot->graph(1)->addData(key, shared_fsr/1024.0*3.0);
     ui->customPlot->graph(1)->addData(key, shared_fsr/4096.0*5.0);
-
-    // rescale value (vertical) axis to fit the current data:
-    //ui->customPlot->graph(0)->rescaleValueAxis();
-    //ui->customPlot->graph(1)->rescaleValueAxis(true);
     lastPointKey = key;
   }
   // make key axis range scroll with the data (at a constant range size of 8):
-  ui->customPlot->xAxis->setRange(key, 8, Qt::AlignRight);
+  ui->customPlot->xAxis->setRange(key, 2, Qt::AlignRight);
   ui->customPlot->replot();
 
   // calculate frames per second:
   static double lastFpsKey;
   static int frameCount;
   ++frameCount;
-  if (key-lastFpsKey > 2) // average fps over 2 seconds
+  if (key-lastFpsKey > 100) // average fps over 2 seconds
   {
     ui->statusBar->showMessage(
           QString("Plot status : %1 FPS, Total Data points: %2")
