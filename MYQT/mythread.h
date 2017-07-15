@@ -8,7 +8,7 @@
 #include <QThread>
 #include <QCoreApplication>
 #include <iostream>
-extern char shared_data_recv[1000];
+extern char shared_data_recv[3000];
 extern int shared_fsr;
 extern int shared_time;
 extern int shared_signalOnOff;

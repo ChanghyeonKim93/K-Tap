@@ -60,9 +60,11 @@ void MainWindow::switchbutton_click(){
 }
 
 void MainWindow::on_connectButton_clicked(){
-    struct termios newtio;
 
     fd = open("/dev/ttyACM0",O_RDWR|O_NOCTTY | O_NDELAY );
+    poll_events.fd=fd; // for polling
+    poll_events.events = POLLIN;
+    poll_events.revents = 0;
 
     cfsetispeed(&newtio, B460800);    // set baud rates
     newtio.c_cflag = B460800 | CS8 | CREAD | CLOCAL;
@@ -78,21 +80,28 @@ void MainWindow::on_connectButton_clicked(){
 void MainWindow::setEvent(){
 
    // mutex->lock();
-    int szRead = read(fd,&shared_data_recv,BUFF_SIZE);
-    std::cout<<"data length : "<<szRead<<std::endl;
+  poll_state = poll((struct pollfd*)&poll_events,1,0);
+  if(poll_state>0){
+      if(poll_events.revents & POLLIN){//
+          int szRead = read(fd,&shared_data_recv,BUFF_SIZE);
+          std::cout<<"data length : "<<szRead<<std::endl;
 
-    if(szRead>0)  {
-        shared_update_count++;
-        shared_updated=1;
-        shared_data_len = szRead;
-      }
+          if(szRead>0)  {
+              shared_update_count++;
+              shared_updated=1;
+              shared_data_len = szRead;
+            }
 
-      shared_data_recv[szRead] = '\0';
-      ui->textEdit->setText(shared_data_recv);
-      ui->textEdit_time->setText(QString("%1").arg(shared_time, 0, 'f', 0));
-      ui->textEdit_fsr->setText(QString("%1").arg(shared_fsr, 0, 'f', 0));
-      ui->textEdit_sign->setText(QString("%1").arg(shared_signalOnOff, 0, 'f', 0));
-      ui->textEdit_seq_num->setText(QString("%1").arg(shared_seq_num,0,'f',0));
+            shared_data_recv[szRead] = '\0';
+            ui->textEdit->setText(shared_data_recv);
+            ui->textEdit_time->setText(QString("%1").arg(shared_time, 0, 'f', 0));
+            ui->textEdit_fsr->setText(QString("%1").arg(shared_fsr, 0, 'f', 0));
+            ui->textEdit_sign->setText(QString("%1").arg(shared_signalOnOff, 0, 'f', 0));
+            ui->textEdit_seq_num->setText(QString("%1").arg(shared_seq_num,0,'f',0));
+        }
+
+    }
+
 }
 
 
@@ -132,22 +141,22 @@ void MainWindow::setRealtimePlot(){
   // calculate two new data points:
   double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds
   static double lastPointKey = 0;
-  if (key-lastPointKey > 0.002) // at most add point every 2 ms
+  if (key-lastPointKey > 0.001) // at most add point every 2 ms
   {
     // add data to lines:
-    ui->customPlot->graph(0)->addData(key, shared_signalOnOff);
-    ui->customPlot->graph(1)->addData(key, shared_fsr/4096.0*5.0);
+    ui->customPlot->graph(0)->addData(shared_time/1000000.0, shared_signalOnOff);
+    ui->customPlot->graph(1)->addData(shared_time/1000000.0, shared_fsr/4096.0*5.0);
     lastPointKey = key;
   }
   // make key axis range scroll with the data (at a constant range size of 8):
-  ui->customPlot->xAxis->setRange(key, 2, Qt::AlignRight);
+  ui->customPlot->xAxis->setRange(shared_time/1000000.0, 1, Qt::AlignRight);
   ui->customPlot->replot();
 
   // calculate frames per second:
   static double lastFpsKey;
   static int frameCount;
   ++frameCount;
-  if (key-lastFpsKey > 100) // average fps over 2 seconds
+  if (key-lastFpsKey > 2) // average fps over 2 seconds
   {
     ui->statusBar->showMessage(
           QString("Plot status : %1 FPS, Total Data points: %2")

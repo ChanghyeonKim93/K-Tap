@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <termios.h>
+#include <sys/poll.h>
 #include <stdio.h>
 
 #include <QMainWindow>
@@ -43,7 +44,9 @@
 #define DEVICE_ARDU1 "/dev/ttyACM1"
 
 //define baud rate
-extern char shared_data_recv[1000];
+#define BUFF_SIZE 3000
+
+extern char shared_data_recv[3000];
 extern int shared_fsr;
 extern int shared_time;
 extern int shared_signalOnOff;
@@ -58,7 +61,6 @@ extern std::vector<int> shared_frequency_vec;
 extern std::string expName;
 extern int shared_seq_num;
 
-#define BUFF_SIZE 255
 
 namespace Ui {
   class MainWindow;
@@ -84,7 +86,14 @@ private slots:
 private:
   int onOff_status=-1;
   char buf_temp[BUFF_SIZE];
+
+  // for serial termios
   int fd;
+  struct termios newtio;
+
+  // for serial polling
+  int poll_state;
+  struct pollfd poll_events;
 
   QMutex* mutex;
   Ui::MainWindow *ui;

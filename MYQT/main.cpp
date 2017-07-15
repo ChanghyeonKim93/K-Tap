@@ -4,7 +4,7 @@
 #include <QApplication>
 #include <QThread>
 
-char shared_data_recv[1000];
+char shared_data_recv[3000];
 int shared_fsr=0;
 int shared_time=0;
 int shared_signalOnOff=0;

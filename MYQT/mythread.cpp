@@ -72,9 +72,9 @@ void mythread::run(){
               myQueue.push(shared_data_recv[k]);
             }
          std::cout<<"queue data :"<<myQueue.front()<<", queue length : "<< myQueue.size()<<", shared_update_count : "<<shared_update_count<<", thread count : "<<th_count<<", seq num : "<< sequence_num <<" , discard_ind : "<<discard_ind<<std::endl;
-          int len=6;
-          if(myQueue.size()>100){
-              if(myQueue.size()>600) len=30;
+          int len=5;
+          if(myQueue.size()>300){
+              if(myQueue.size()>700) len=30;
               for(int m=0;m<len;m++){
                   if(myQueue.front()=='S'){
                       myQueue.pop();
@@ -120,7 +120,7 @@ void mythread::run(){
                     }
 
                   else if(myQueue.front()=='Y' ){//&& shared_time_vec.size()>=1){ // (from arduino) if button is not pushed, 'N' is sended.
-                      for(int k=1;k<10;k++){
+                      for(int k=1;k<3;k++){
                           std::cout<<"in seq change"<<std::endl;
                         }
                       myQueue.pop();
