@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "serialThread.h"
+
 #include <iostream>
 #include <fstream>
 #include <fcntl.h>
@@ -27,6 +29,7 @@
 #include <QtCore>
 #include <QDebug>
 #include <QMutexLocker>
+#include <QTime>
 
 #include <fstream>
 #include <string>
@@ -34,33 +37,10 @@
 #include <time.h>
 #include <chrono>
 
-//define serial port
-#define DEVICE00 "/dev/ttyS0"
-#define DEVICE01 "/dev/ttyS1"
-#define DEVICE02 "/dev/ttyS2"
-#define DEVICE_USB0 "/dev/ttyUSB0"
-#define DEVICE_USB1 "/dev/ttyUSB1"
-#define DEVICE_ARDU0 "/dev/ttyACM0"
-#define DEVICE_ARDU1 "/dev/ttyACM1"
-
 //define baud rate
 #define BUFF_SIZE 3000
-
-extern char shared_data_recv[3000];
-extern int shared_fsr;
-extern int shared_time;
-extern int shared_signalOnOff;
-extern int shared_frequency;
-extern int shared_data_len;
-extern int shared_updated;
-extern int shared_update_count;
-extern std::vector<int> shared_fsr_vec;
-extern std::vector<int> shared_time_vec;
-extern std::vector<int> shared_signal_vec;
-extern std::vector<int> shared_frequency_vec;
 extern std::string expName;
-extern int shared_seq_num;
-
+extern int serialConnectOn;
 
 namespace Ui {
   class MainWindow;
@@ -71,36 +51,27 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit MainWindow(QMutex* mu,QWidget *parent = 0);
+  explicit MainWindow(QMutex* mu,serialThread* myserialThread,QWidget *parent = 0);
   virtual ~MainWindow();
   void endProgram();
-  char data_recv[BUFF_SIZE];
 
 private slots:
   void switchbutton_click();
   void on_connectButton_clicked();
   void setEvent();
-  void saveData();
   void setRealtimePlot();
-  //void deserialize();
+
 private:
-  int onOff_status=-1;
-  char buf_temp[BUFF_SIZE];
-
-  // for serial termios
-  int fd;
-  struct termios newtio;
-
-  // for serial polling
-  int poll_state;
-  struct pollfd poll_events;
+  int programOnOff_status=-1;
 
   QMutex* mutex;
+  serialThread* thisSerialThread;
   Ui::MainWindow *ui;
-  QSocketNotifier *notRsRead;
 
   QString experimentalName;
   QTimer dataTimer;
+
+  QTime mytime;
 
 };
 

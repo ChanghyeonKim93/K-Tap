@@ -15,12 +15,10 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     qcustomplot.cpp \
-    mythread.cpp \
-  #  mythreadworker.cpp
+    serialThread.cpp \
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
-    mythread.h \
-  #  mythreadworker.h
+    serialThread.h \
 
 FORMS    += mainwindow.ui

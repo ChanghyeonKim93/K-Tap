@@ -56,7 +56,7 @@ void fsrSound::sendData() {
   //dataArrSend[16] = '\n';
   Serial.write(dataArrSend,16);
   Serial.flush();
-  delayMicroseconds(100);
+  //delayMicroseconds(100);
 }
 
 

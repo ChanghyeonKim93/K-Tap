@@ -10,10 +10,10 @@
 // initial settings
 
 // 1. Stimulus Mode Selection - SOUND / LED / SOUND + LED
-const int signal_LED    = 0; // if 1 , LED on 
+const int signal_LED    = 1; // if 1 , LED on 
 const int signal_SOUND  = 1; // if 1 , Sound on. If you set both values with 1, SOUND and LED burst simultaneously .  
 const int whiteNoise_on = 1; // if 1 , white noise on
-const int fsrOrButton   = 1; // if 1 , fsr on / 0 : button on 
+const int fsrOrButton   = 0; // if 1 , fsr on / 0 : button on 
 
 // 2. trials and signal settings
 #define expArrSz 24 // The number of stimulations in one trial. Every trial should have the same number of stimulations.
@@ -24,7 +24,7 @@ const int sign_Freq[][expArrSz]     = {{1000,1000,1000,1000,1000,1000,1000,1000,
                                        {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000},
                                        {1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000}};// unit : [ms] 
                                    
-const int sign_Duration[]           = {100,100,100,100}; // unit : [ms], 
+const int sign_Duration[]           = {5,10,15,20}; // unit : [ms], 
                                    
 const int sign_Interval[][expArrSz] = {{400,400,400,400,400,400,400,400,400,400,400,400,400,400,400,400,400,400,400,400,400,400,400,400},
                                        {600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600},
