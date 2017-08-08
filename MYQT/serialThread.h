@@ -89,12 +89,10 @@ private:
   // other purposes
   int sequence_num=0;
   std::queue<char> dataQueue;
-
   QSocketNotifier *notRsRead;
 
 public slots:
   void run();
-
 };
 
 #endif // SERIALTHREAD_H

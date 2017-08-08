@@ -58,11 +58,13 @@ public:
 private slots:
   void switchbutton_click();
   void on_connectButton_clicked();
-  void setEvent();
   void setRealtimePlot();
+  void slider_triggered(int input);
 
 private:
   int programOnOff_status=-1;
+  double denom=1000000.0;
+  double rightLim=5.0;
 
   QMutex* mutex;
   serialThread* thisSerialThread;

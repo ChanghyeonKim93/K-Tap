@@ -11,6 +11,7 @@ MainWindow::MainWindow(QMutex* mu, serialThread* myserialthread, QWidget *parent
     ui->setupUi(this);
     this->connect(this->ui->switchButton,SIGNAL(clicked()),this,SLOT(switchbutton_click()));
     this->connect(this->ui->connectButton,SIGNAL(clicked()),this,SLOT(on_connectButton_clicked()));
+    this->connect(this->ui->horizontalSlider,SIGNAL(valueChanged(int)),this,SLOT(slider_triggered(int)));
 
   // for realtime plotting
     ui->customPlot->addGraph();//blue line
@@ -22,12 +23,13 @@ MainWindow::MainWindow(QMutex* mu, serialThread* myserialthread, QWidget *parent
     ui->customPlot->yAxis->setLabel("Data (fsr / signal)");
     \
     ui->customPlot->axisRect()->setupFullAxesBox();
-    ui->customPlot->yAxis->setRange(0.0,5.0);
+    ui->customPlot->yAxis->setRange(0.0,rightLim);
 
     //make left and bottom axes transfer their ranges to right and top axes:
-
+    this->setWindowTitle("K-TAP (version 1.0)");
     this->connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)),this,SLOT(QCPRange));
     this->connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)),this,SLOT(QCPRange));
+    ui->plotResolution1->setText(QVariant(0).toString());
 
     this->connect(&dataTimer, SIGNAL(timeout()),this,SLOT(setRealtimePlot()));
     dataTimer.start(0); // Interval 0 means to refresh as fast as possible. timeout ( start(0) means everytime renew the data)
@@ -44,18 +46,23 @@ void MainWindow::switchbutton_click(){
         experimentalName = ui->nameEdit->text();
         expName=experimentalName.toLocal8Bit().constData();
         if(expName[0]=='p'&& expName[1]=='l' && expName[2] =='e'){
-            ui->nameEdit->setText("Please fill it!");
+            ui->nameEdit->setText("User name required");
+            programOnOff_status=-1;
+          }
+        else if(expName[0]=='U' && expName[1]=='s'&&expName[2]=='e'){
+            programOnOff_status=-1;
           }
         else{
             programOnOff_status=1;
-
             std::cout<<expName<<std::endl;
-            this->ui->switchButton->setText("Exit");
+            QString directoryTemp="../fsrExpData/"+QString::fromStdString(expName)+"/";
+            this->ui->saveDirEdit->setText(directoryTemp);
+            this->ui->switchButton->setText("Quit");
           }
     }
     else if(programOnOff_status==1){
       programOnOff_status=0;
-      std::cout<<"end?"<<std::endl;
+      std::cout<<"The program is ended..."<<std::endl;
       endProgram();
     }
 }
@@ -64,14 +71,16 @@ void MainWindow::on_connectButton_clicked(){
   std::cout<<"Serial connecting..."<<std::endl;
   serialConnectOn=1;
 }
-
-void MainWindow::setEvent(){
+void MainWindow::slider_triggered(int input){
+  rightLim=(input+1.0)/100.0*5.5 + 1.0;
+  QString temp_resol = QVariant(rightLim).toString();
+  ui->plotResolution1->setText(temp_resol);
 }
 
 
 void MainWindow::endProgram(){
   usleep(1000000);
-  std::cout<<"Program end ! will be closed..."<<std::endl;
+  std::cout<<"The program will be closed..."<<std::endl;
   usleep(500000);
   qApp->quit();
 
@@ -96,12 +105,12 @@ void MainWindow::setRealtimePlot(){
   // make key axis range scroll with the data (at a constant range size of 8):
 
   if(vectorFinalNum>0){
-      ui->customPlot->xAxis->setRange(thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0-5.0, thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0);
+      ui->customPlot->xAxis->setRange(thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0-rightLim, thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0);
 
       if((key-lastPointKey)>10){
           std::cout<<vectorFinalNum<<std::endl;
           std::cout<<thisSerialThread->shared_time_vec[vectorFinalNum]<<std::endl;
-          ui->customPlot->xAxis->setRange(thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0-5.0, thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0);
+          ui->customPlot->xAxis->setRange(thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0-rightLim, thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0);
           ui->customPlot->replot();
           lastPointKey = key;
         }
