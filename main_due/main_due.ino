@@ -73,7 +73,7 @@ void setup() {
 
 void loop() {
   if(doLoop==1){
-    for(int k = 0;k<expArrSz;k++){
+    for(int k = 0;k<=expArrSz;k++){
       int steps=0;
       int toneOn = 0;
       while(steps==0){ // signal on
