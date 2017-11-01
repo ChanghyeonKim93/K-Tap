@@ -8,6 +8,27 @@ Synchronizing finger tapping to a sequence of tones (sensorimotor synchronizatio
 
 --------------------------------------------------
 
+### How do I get set up? ###
+
+* Summary of set up
+* Configuration
+* Dependencies
+* Database configuration
+* How to run tests
+* Deployment instructions
+
+### Contribution guidelines ###
+
+* Writing tests
+* Code review
+* Other guidelines
+
+### Who do I talk to? ###
+
+* Repo owner or admin
+* Other community or team contact
+
+### ETC. ###
 QMAKE : http://purestarman.tistory.com/202
 
 QMutex tutorial : http://yunyoungmok.tistory.com/entry/%EB%A9%80%ED%8B%B0-%EC%8A%A4%EB%A0%88%EB%93%9C%EC%97%90%EC%84%9C-%ED%95%9C%EA%B0%9C%EC%9D%98-%EB%B3%80%EC%88%98%EB%A5%BC-%EA%B0%99%EC%9D%B4-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0-QT-QMutex
@@ -29,22 +50,3 @@ m.blog.naver.com/yally23232/220795372958
 * Version
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact

@@ -26,7 +26,7 @@ MainWindow::MainWindow(QMutex* mu, serialThread* myserialthread, QWidget *parent
     ui->customPlot->yAxis->setRange(0.0,rightLim);
 
     //make left and bottom axes transfer their ranges to right and top axes:
-    this->setWindowTitle("K-TAP (version 1.0)");
+    this->setWindowTitle("K-TAP (version 1.1) - 2017.11.01");
     this->connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)),this,SLOT(QCPRange));
     this->connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)),this,SLOT(QCPRange));
     ui->plotResolution1->setText(QVariant(0).toString());
@@ -108,8 +108,8 @@ void MainWindow::setRealtimePlot(){
       ui->customPlot->xAxis->setRange(thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0-rightLim, thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0);
 
       if((key-lastPointKey)>10){
-          std::cout<<vectorFinalNum<<std::endl;
-          std::cout<<thisSerialThread->shared_time_vec[vectorFinalNum]<<std::endl;
+          //std::cout<<vectorFinalNum<<std::endl;
+          //std::cout<<thisSerialThread->shared_time_vec[vectorFinalNum]<<std::endl;
           ui->customPlot->xAxis->setRange(thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0-rightLim, thisSerialThread->shared_time_vec[vectorFinalNum]/1000000.0);
           ui->customPlot->replot();
           lastPointKey = key;

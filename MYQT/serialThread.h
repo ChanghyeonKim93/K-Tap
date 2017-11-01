@@ -87,7 +87,8 @@ private:
   struct pollfd poll_events;
 
   // other purposes
-  int sequence_num=0;
+  int sequence_num=1;
+  int prevent_mult_save = 1;
   std::queue<char> dataQueue;
   QSocketNotifier *notRsRead;
 

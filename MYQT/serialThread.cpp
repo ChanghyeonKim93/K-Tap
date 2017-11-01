@@ -29,7 +29,7 @@ void serialThread::serial_getData(){
           int sizeRead = read(fd,&shared_data_recv,BUFF_SIZE);
           if(sizeRead>0)  {
               nElapsed=mytime.elapsed(); // for debug and estimate the execution time.
-              qDebug() <<"Elapsed Serial Thread recv time [ms] : "<<nElapsed<<",data length:"<<sizeRead<<", queue data :"<<dataQueue.front()<<", queue length : "<< dataQueue.size()<<", shared_update_count : "<<shared_update_count<<", seq num : "<< sequence_num <<" , discard_ind : "<<discard_ind;
+              //qDebug() <<"Elapsed Serial Thread recv time [ms] : "<<nElapsed<<",data length:"<<sizeRead<<", queue data :"<<dataQueue.front()<<", queue length : "<< dataQueue.size()<<", shared_update_count : "<<shared_update_count<<", seq num : "<< sequence_num <<" , discard_ind : "<<discard_ind;
               //std::cout<<"queue data :"<<dataQueue.front()<<", queue length : "<< dataQueue.size()<<", shared_update_count : "<<shared_update_count<<", seq num : "<< sequence_num <<" , discard_ind : "<<discard_ind<<std::endl;
 
               shared_update_count++;
@@ -45,14 +45,14 @@ void serialThread::serial_getData(){
 }
 
 void serialThread::saveData(){
-  std::cout<<"seq num "<<sequence_num<<" : save data..."<<std::endl;
+  std::cout<<"Trial Number : "<<sequence_num<<" --> being saved..."<<std::endl;
   std::fstream dataStream;
   std::stringstream myFileNameStream;
   myFileNameStream<<"../fsrExpData/"<<expName<<"_exp_"<<sequence_num<<"_dataLog.txt";
   std::string myFileNameString=myFileNameStream.str();
 
   dataStream.open(myFileNameString.c_str(),std::fstream::out);
-  std::cout<<"vector size : "<<shared_time_vec.size()<<std::endl;
+//  std::cout<<"vector size : "<<shared_time_vec.size()<<std::endl;
   if(dataStream.is_open()){
       dataStream<<"time[us],volt(fsr)[v],signal,signal frequency[Hz]"<<std::endl;
       for(int k=0;k<shared_time_vec.size();++k){
@@ -111,6 +111,8 @@ void serialThread::serial_analyzer(){
               dataQueue.pop();
               char temp[14];
               //std::cout<<"S : found!!"<<std::endl;
+              prevent_mult_save = 0;
+
               temp[0] = dataQueue.front(); dataQueue.pop();
               temp[1] = dataQueue.front(); dataQueue.pop();
               temp[2] = dataQueue.front(); dataQueue.pop();
@@ -122,7 +124,6 @@ void serialThread::serial_analyzer(){
               temp[7] = dataQueue.front(); dataQueue.pop();
               temp[8] = dataQueue.front(); dataQueue.pop();
               temp[9] = dataQueue.front(); dataQueue.pop();
-
 
               temp[10] = dataQueue.front(); dataQueue.pop();
 
@@ -150,23 +151,27 @@ void serialThread::serial_analyzer(){
                 }
             }
 
-          else if(dataQueue.front()=='Y' ){//&& shared_time_vec.size()>=1){ // (from arduino) if button is not pushed, 'N' is sended.
-              for(int k=1;k<3;k++){
-                  std::cout<<"in seq change"<<std::endl;
-                }
+          else if(dataQueue.front()=='Y'&& prevent_mult_save==0 ){//&& shared_time_vec.size()>=1){ // (from arduino) if button is not pushed, 'N' is sended.
+              std::cout<<"=========================================================================================================================="<<std::endl;
+              std::cout<<"Trial is changed! (arduino trial switch button is clicked)"<<std::endl;
+              prevent_mult_save=1;
               dataQueue.pop();
-              if(sequence_num>=0){
+              if(dataQueue.size()>=0 ){
+                  std::cout<<" data queue size : "<<dataQueue.size()<<std::endl;
                   saveData();
-                }
+                  sequence_num++;
+              }
 
-              sequence_num++;
               shared_seq_num=sequence_num;
 
               // initialize all containers.
+              int in_ind=1;
               while(!dataQueue.empty()){
+                  in_ind++;
                   dataQueue.pop(); // clear queue
                 }
-              for(int k =0;k<3;k++)  std::cout<<"Queue size : "<<dataQueue.size()<<std::endl;
+
+              std::cout<<"Data array size : "<<dataQueue.size()<<std::endl;
 
               dataQueue.push('C');
               shared_fsr=0;
@@ -209,7 +214,7 @@ void serialThread::run(){
       th_count++;
       if(serialConnectOn==1){
           serial_connect();
-          std::cout<<"Serial Connected Done!"<<std::endl;
+          std::cout<<"Arduino Serial Connected Done!"<<std::endl;
           break;
         }
     }
